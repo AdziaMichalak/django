@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from greetings.views import name
 
 
 class MathViewsTest(TestCase):
@@ -10,6 +11,4 @@ class MathViewsTest(TestCase):
         response = self.client.get('/greetings/')
         self.assertIn('Hello World!', response.content.decode())
 
-    def test_greetings_name_page(self):
-        response = self.client.get('/greetings/test')
-        self.assertIn('Hello Test!', response.content.decode())
+   
