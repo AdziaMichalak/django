@@ -1,0 +1,21 @@
+{% extends "posts/main.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <table>
+        <tr>
+            <th>Nick:</th>
+            <td>{{ author.nick }}</td>
+        </tr>
+        <tr>
+            <th>E-mail:</th>
+            <td>{{ author.email }}</td>
+        </tr>
+        <tr>
+            <th>Bio:</th>
+            <td>{{ author.bio }}</td>
+        </tr>
+    </table>
+    <a href="{% url "posts:a_list" %}">Wróć do listy autorów</a>
+{% endblock %}

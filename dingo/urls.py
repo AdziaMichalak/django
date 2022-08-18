@@ -21,4 +21,5 @@ urlpatterns = [
    path('maths/', include("maths.urls")),
    path('greetings/', include("greetings.urls")),
    path('sessions/', include("sessions.urls")),
+   path('posts/', include('posts.urls')),
 ]

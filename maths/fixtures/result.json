@@ -1,0 +1,122 @@
+[
+{
+    "model": "maths.result",
+    "pk": 1,
+    "fields": {
+        "value": null,
+        "error": "ZeroDivisionError"
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 2,
+    "fields": {
+        "value": 3.0,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 3,
+    "fields": {
+        "value": -10.0,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 4,
+    "fields": {
+        "value": 9.0,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 5,
+    "fields": {
+        "value": -7.0,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 6,
+    "fields": {
+        "value": 8.0,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 7,
+    "fields": {
+        "value": 0.125,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 8,
+    "fields": {
+        "value": 0.0,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 9,
+    "fields": {
+        "value": 7.0,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 10,
+    "fields": {
+        "value": 0.14285714285714285,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 11,
+    "fields": {
+        "value": 0.16666666666666666,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 12,
+    "fields": {
+        "value": 0.5555555555555556,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 13,
+    "fields": {
+        "value": 2.5,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 14,
+    "fields": {
+        "value": 0.25,
+        "error": null
+    }
+},
+{
+    "model": "maths.result",
+    "pk": 15,
+    "fields": {
+        "value": 1.0,
+        "error": null
+    }
+}
+]

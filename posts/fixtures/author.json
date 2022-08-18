@@ -1,0 +1,20 @@
+[
+{
+    "model": "posts.author",
+    "pk": 1,
+    "fields": {
+        "nick": "Magdalena Majcher",
+        "email": "mmajcher@gmail.com",
+        "bio": null
+    }
+},
+{
+    "model": "posts.author",
+    "pk": 3,
+    "fields": {
+        "nick": "Stephen King",
+        "email": "sking@gmail.com",
+        "bio": ""
+    }
+}
+]

@@ -1,0 +1,35 @@
+[
+{
+    "model": "posts.post",
+    "pk": 4,
+    "fields": {
+        "title": "Ma³e zbrodnie",
+        "content": "„Ma³e zbrodnie” inspirowane s¹ prawdziw¹ histori¹ – znaleziskiem, którym dwadzieœcia lat temu ¿y³a ca³a Polska.",
+        "created": "2022-08-17T11:52:11.094Z",
+        "modified": "2022-08-17T12:17:10.389Z",
+        "author_id": null
+    }
+},
+{
+    "model": "posts.post",
+    "pk": 5,
+    "fields": {
+        "title": "Najgorszy dom",
+        "content": "„Najgorszy dom” to pe³na emocji powieœæ obyczajowo-kryminalna, w której kluczem do rozwi¹zania zagadki bêd¹ rodzinne tajemnice.",
+        "created": "2022-08-17T11:59:13.489Z",
+        "modified": "2022-08-17T12:42:16.631Z",
+        "author_id": null
+    }
+},
+{
+    "model": "posts.post",
+    "pk": 6,
+    "fields": {
+        "title": "Uniesienie",
+        "content": "Tajemnicza przypad³oœæ i zwyk³y cz³owiek, który w upiornym miasteczku Castle Rock wywo³a rewolucjê – zjednoczy ludzi, których dzieli wszystko. Witajcie w Castle Rock!",
+        "created": "2022-08-18T15:28:39.680Z",
+        "modified": "2022-08-18T15:28:39.680Z",
+        "author_id": 3
+    }
+}
+]

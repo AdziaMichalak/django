@@ -1,0 +1,17 @@
+{% extends "posts/main.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for p in posts %}
+            <li><a href="{% url "posts:details" p.id %}">{{ p.title }}</a></li>
+        {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Wyślij>>">
+    </form><br>
+    <a href="{% url "posts:a_list" %}">Lista autorów</a>
+{% endblock content %}
