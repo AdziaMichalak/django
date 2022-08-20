@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from maths.models import Math, Result
-from maths.forms import ResultForm
+from maths.forms import ResultForm, SearchForm
 from django.template import Context, loader
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -60,9 +61,24 @@ def div(request, a, b):
 	else:
 		return HttpResponse("Nie dziel przez 0")
 
+def maths_search(request):
+    operation = request.POST.get('operation')
+    content = Math.objects.all().filter(operation=operation)
+    form = SearchForm()
+    return render(
+        request=request,
+        template_name="maths/search.html",
+        context={
+            "search_result": content,
+            "form": form
+        }
+    )
 
 def maths_list(request):
    maths = Math.objects.all()
+   paginator = Paginator(maths, 5)
+   page_number = request.GET.get('page')
+   maths = paginator.get_page(page_number)
    return render(
        request=request,
        template_name="maths/list.html",
@@ -108,3 +124,4 @@ def results_list(request):
             "form": form
         }
     )
+

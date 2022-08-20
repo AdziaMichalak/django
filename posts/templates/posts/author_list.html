@@ -3,15 +3,23 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <ul>
+<div class="container">
+    <div class="row">
+      <div class="col">
+        <ul>
         {% for a in authors %}
-            <li><a href="{% url "posts:a_details" a.id %}">{{ a.nick }}</a></li>
+          <li><a href="{% url "posts:a_details" a.id %}">{{ a.nick }}</a></li>
         {% endfor %}
-    </ul>
-    <form method="post">
+        </ul>
+      </div>
+    <div class="col">
+    <h5><b>Dodaj nowego autora:</b></h5><br>
+      <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Wyślij>>">
-    </form><br>
+      </form><br>
     <a href="{% url "posts:list" %}">Wróć do listy postów</a>
+    </div>
+</div>
 {% endblock content %}

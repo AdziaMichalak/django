@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import math, add, sub, mul, div, maths_list, math_details, results_list
+from .views import math, add, sub, mul, div, maths_list, math_details, results_list, maths_search
 
 app_name="maths"
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
    path('histories/', maths_list, name="list"),
    path('histories/<int:id>', math_details, name="details"),
    path('results/', results_list, name="results"),
+   path('search/', maths_search, name="search"),
 ]

@@ -23,3 +23,6 @@ class ResultForm(forms.ModelForm):
     class Meta:
         model = Result
         fields = ["value", "error"]
+
+class SearchForm(forms.Form):
+    operation = forms.ChoiceField(label='Operacja', choices=OPERATION_CHOICES)

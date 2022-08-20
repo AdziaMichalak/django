@@ -1,24 +1,60 @@
-<!doctype html>
+{% load bootstrap4 %}
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{% block title %}Title{% endblock %}</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Title{% endblock %}</title>
+     
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'posts/css/style.css' %}">
+     
+        {# Load CSS and JavaScript #}
+        {% bootstrap_css %}
+        {% bootstrap_javascript jquery='full' %}
+        
+     
+     </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">DINGO</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="/">Home
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/me">ABOUT</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/posts">POSTS</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/maths/histories">MATHS</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/contact">CONTACT</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+
 <div id="content">
-    <div id="header">
-        <b>To część stała szablonu głównego.</b>
-    </div>
-    {% if messages %}
+    <br><br>    
+    {% if messages %}    
         <ul class="messages">
             {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
+    
     <div id="inner-content">
         {% block content %}
             To jest blok kodu. Można go nadpisać w innych szablonach.

@@ -8,3 +8,12 @@ def greetings(request):
 
 def name(request, name):
    return HttpResponse("hello {}!".format(name).title())
+
+def welcome(request):
+   return render(request, "greetings/main.html")
+
+def contact(request):
+    return render(request, "greetings/contact.html")
+
+def me(request):
+    return render(request, "greetings/me.html")

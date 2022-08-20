@@ -1,0 +1,16 @@
+{% extends "maths/main.html" %}
+
+{% block title %}Moj tytuł{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for m in search_result %}
+            <li>{{ m }}</li>
+        {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Wyślij>>">
+    </form>
+{% endblock content %}
