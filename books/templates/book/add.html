@@ -1,0 +1,25 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col ms-auto"><h1>Książka</h1></div>
+        <div class="col"></div>
+    </div>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col ms-auto">
+            <form action="{% url 'book_create' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <input class="btn btn-primary mb-3" type="submit" value="Dodaj">
+            </form>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+
+{% endblock %}

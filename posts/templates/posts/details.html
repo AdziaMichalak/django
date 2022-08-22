@@ -25,6 +25,14 @@
             <th>Autor:</th>
             <td>{{ post.author_id.nick }}</td>
         </tr>
+        <tr>
+            <th>Image:</th>
+            <td>
+               {% if posts.image %}
+               <div><img src="{{ post.image.url }}" width=500></div>
+               {% endif %}
+            </td>
+        </tr>
     </table>
     <a href="{% url "posts:list" %}">Wróć do listy postów</a>
 {% endblock %}

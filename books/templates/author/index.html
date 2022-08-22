@@ -1,0 +1,44 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col ms-auto">
+            <h1>Autorzy</h1>
+            <a class="btn btn-primary" href="{% url 'author_create' %}" role="button"><i class="bi bi-plus-square"></i> Dodaj Autora</a>
+            <br/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col ms-auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Imię</th>
+                  <th scope="col">Nazwisko</th>
+                  <th scope="col">Data urodzenia</th>
+                  <th scope="col">Historia</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for author in authors %}
+                <tr>
+                  <th scope="row">{{ author.id }}</th>
+                  <td>{{ author.first_name }}</td>
+                  <td>{{ author.last_name }}</td>
+                  <td>{{ author.birth_date }}</td>
+                  <td>
+                      <a class="btn btn-primary" href="{% url 'author_update' author.id %}"><i class="bi bi-pencil"></i> Edytuj</a>
+                      <a class="btn btn-primary" href="{% url 'author_delete' author.id %}"><i class="bi bi-eraser"></i> Usuń</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

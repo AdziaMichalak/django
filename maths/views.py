@@ -5,6 +5,7 @@ from maths.models import Math, Result
 from maths.forms import ResultForm, SearchForm
 from django.template import Context, loader
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -52,14 +53,16 @@ def mul(request, a, b):
     )
 
 def div(request, a, b):
-	a, b = int(a), int(b)
-	if b != 0:
-		wynik = a/b
-		t = loader.get_template("maths/operation.html")
-		c = {"a":a, "b":b, "operacja": "|", "wynik":wynik, "title": "dzielenie"}
-		return HttpResponse(t.render(c))
-	else:
-		return HttpResponse("Nie dziel przez 0")
+   if int(b) == 0:
+       wynik = "Error"
+       messages.add_message(request, messages.ERROR, "Dzielenie przez zero!")
+   else:
+       wynik = a / int(b)
+   c = {"a": a, "b": b, "operacja": "/", "wynik": wynik, "title": "dzielenie"}
+   return render(
+       request=request,
+       template_name="maths/operation.html",
+       context=c)
 
 def maths_search(request):
     operation = request.POST.get('operation')
@@ -74,6 +77,7 @@ def maths_search(request):
         }
     )
 
+#@login_required
 def maths_list(request):
    maths = Math.objects.all()
    paginator = Paginator(maths, 5)

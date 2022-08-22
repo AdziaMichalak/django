@@ -1,8 +1,14 @@
-{% extends "maths/main.html" %}
+{% extends "main.html" %}
 
 {% block title %}Maths list{% endblock %}
 
 {% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="/maths/histories/">MATHS</li>
+    </ol>
+  </nav>
    <ul>
        {% for m in maths %}
             <li><a href="{% url "maths:details" m.id %}">{{ m }}</a></li>

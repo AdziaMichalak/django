@@ -15,11 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+   path('grappelli/', include('grappelli.urls')),
    path('admin/', admin.site.urls),
-   path('', include("greetings.urls")),
+   path('greetings/', include("greetings.urls")),
    path('maths/', include("maths.urls")),
    path('sessions/', include("sessions.urls")),
    path('posts/', include('posts.urls')),
-]
+   path('accounts/', include('django.contrib.auth.urls')),
+   path('', include('books.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

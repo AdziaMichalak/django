@@ -12,13 +12,24 @@
         {% endfor %}
     </ul>
     </div>
+    {% if perms.posts.add_post %}
     <div class="col">
+        <div class="form-group"></div>
         <h5><b>Dodaj nowy:</b></h5><br>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Wyślij>>">
+        <form action="" method="POST" enctype='multipart/form-data'>
+            
+               {% csrf_token %}
+               {{ form.as_p }}
+            <label for="exampleFormControlFile1">Image</label>
+            <input type="file" class="form-control-file" id="exampleFormControlFile1"><br>
+          
+        <input type="submit" value="Dodaj"><br>
+        <a href="{% url "posts:a_list" %}">Lista autorów</a>
+        </div>
     </form><br>
-    <a href="{% url "posts:a_list" %}">Lista autorów</a>
+    
+    
+    {% else %}
+    {% endif %}
 </div>
 {% endblock content %}

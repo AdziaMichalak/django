@@ -1,0 +1,57 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col ms-auto">
+            <h1>Książki</h1>
+            <a class="btn btn-primary" href="{% url 'book_create' %}" role="button"><i class="bi bi-plus-square"></i> Dodaj książkę</a>
+            <br/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col ms-auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Tytuł</th>
+                  <th scope="col">Autor</th>
+                  <th scope="col">Kategoria</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Historia</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for book in books %}
+                <tr>
+                  <th scope="row">{{ book.id }}</th>
+                  <td>{{ book.name }}</td>
+                  <td>
+                      {% for author in book.authors.all %}
+                        < {{ author.first_name }} , {{ author.last_name }} >
+                      {% endfor %}
+                  </td>
+                  {% if book.status == "D" %}
+                  <td>Dostępna</td>
+                  {% endif %}
+                  {% if book.status == "N" %}
+                  <td>Niedostępna</td>
+                  {% endif %}
+                  {% if posts.image %}
+               <div><img src="{{ post.image.url }}" width=500></div>
+               {% endif %}
+                  <td>
+                      <a class="btn btn-primary" href="{% url 'book_update' book.id %}"><i class="bi bi-pencil"></i> Edytuj</a>
+                      <a class="btn btn-primary" href="{% url 'book_delete' book.id %}"><i class="bi bi-eraser"></i>Usuń</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

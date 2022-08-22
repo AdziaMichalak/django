@@ -1,0 +1,110 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col"><p></p></div>
+        <div class="col"></div>
+    </div>
+
+    <div class="row">
+        <div class="col ms-auto">
+            <h2>Wypożyczaj książki</h2>
+            <a class="btn btn-primary" href="{% url 'lendbook_create' %}" role="button"><i class="bi bi-book"></i>Wypożycz książkę</a>
+            <br/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col"><br/></div>
+    </div>
+    <div class="row">
+        <div class="col ms-auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Użytkownik</th>
+                  <th scope="col">Książka</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Termin wypożyczenia</th>
+                  <th scope="col">Data zwrotu</th>
+                  <th scope="col">Historia</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for borrowbook in borrowbooks %}
+                <tr>
+                  <th scope="row">{{ borrowbook.id }}</th>
+                  <td>{{ borrowbook.library_user }}</td>
+                  <td>{{ borrowbook.book }}</td>
+                  {% if borrowbook.status == "W" %}
+                  <td>Wypożyczona</td>
+                  {% endif %}
+                  {% if borrowbook.status == "Z" %}
+                  <td>Zwrócona</td>
+                  {% endif %}
+                  {% if borrowbook.status == "N" %}
+                  <td>Nie zwrócono</td>
+                  {% endif %}
+                  <td>{{ borrowbook.lend_date }}</td>
+                  {% if borrowbook.return_date is not None %}
+                  <td>{{ borrowbook.return_date }}</td>
+                  {% endif %}
+                  {% if borrowbook.return_date is None %}
+                  <td></td>
+                  {% endif %}
+                  <td>
+                      <a class="btn btn-primary" href="{% url 'lendbook_create' lendbook.id %}"><i class="bi bi-pencil"></i> Edytuj</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <br/>
+            <h3>książka dostępna</h3>
+            <br/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col ms-auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Tytuł</th>
+                  <th scope="col">Autor</th>
+                  <th scope="col">Kategoria</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for book in books_available %}
+                <tr>
+                  <th scope="row">{{ book.id }}</th>
+                  <td>{{ book.name }}</td>
+                  <td>
+                      {% for author in book.authors.all %}
+                        < {{ author.first_name }} , {{ author.last_name }} >
+                      {% endfor %}
+                  </td>
+                  {% if book.status == "D" %}
+                  <td>Dostępna</td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

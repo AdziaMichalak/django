@@ -1,11 +1,12 @@
 {% load bootstrap4 %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
    <meta charset="UTF-8">
    <title>{% block title %}Title{% endblock %}</title>
 
-   {% load static %}
+   
    <link rel="stylesheet" type="text/css" href="{% static 'maths/css/style_maths.css' %}">
 
    {# Load CSS and JavaScript #}
@@ -40,6 +41,11 @@
               <li class="nav-item">
                 <a class="nav-item nav-link" href="/contact">CONTACT</a>
               </li>
+              {% if user.is_authenticated %}
+        <p class="nav-link"> {{ user.username }} | <a href="{% url 'logout' %}">logout</a></p>
+        {% else %}
+        <a class="nav-link" href="{% url 'login' %}">login</a>
+        {% endif %}
             </ul>
           </div>
         </div>
