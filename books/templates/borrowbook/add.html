@@ -1,16 +1,16 @@
 {% extends "layout/base.html" %}
 
 {% block content %}
-
+<br>
 <div class="container">
     <div class="row">
         <div class="col"></div>
-        <div class="col ms-auto"><h1>Wypożycz książkę</h1></div>
+        <div style="margin-left: 20px"><h1>Wypożycz książkę</h1></div><br>
         <div class="col"></div>
     </div>
     <div class="row">
         <div class="col"></div>
-        <div class="col ms-auto">
+        <div class="col ms-auto"><br>
             {{forms.errors}}
             {% if form.errors %}
                 {{forms.errors}}

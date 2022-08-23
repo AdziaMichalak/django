@@ -1,15 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.db.models import Count
+from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormMixin
 from django.views.generic.base import TemplateView
 from django.urls import reverse_lazy
-from books.form import ContactForm, CommentForm
+from django.views.generic import ListView, TemplateView, DetailView, FormView, UpdateView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Book, BookComment, Category, InBoxMessages
+from books.models import Book, BookComment, Category, InBoxMessages, BookReview, BookRentHistory
 from books import form, models
-from django.views.generic import ListView, TemplateView
+from books.form import ContactForm, CommentForm
 
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -77,29 +78,12 @@ class BookIndex(TemplateView):
         return context
 
 
-class BookCreate(CreateView, FormMixin):
+class BookCreate(CreateView):
     template_name = 'book/add.html'
     form_class = form.BookForm
-    #form_class = CommentForm
     model = models.Book
     success_url = reverse_lazy('book_index')
     
-
-    def form_valid(self, form):
-        b = self.get_object()
-        text = form.cleaned_data['text']
-        new_comment = BookComment(text=text, book=b, user=self.request.user)
-        new_comment.save()
-        messages.success(self.request, "Your comment is added, thank you")
-        return super().form_valid(form)
-
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.get_form()
-        context['comments'] = BookComment.objects.filter(book=self.object).order_by('-id')
-        return context
-
 
 class BookUpdate(UpdateView):
     template_name = 'book/update.html'
@@ -113,6 +97,54 @@ class BookUpdate(UpdateView):
         context['active_book'] = 'active'
         return context
 
+class BookDetailView(FormMixin, DetailView):
+    template_name = "book/books.html"
+    model = Book
+    form_class = CommentForm
+
+    def get_success_url(self):
+        return reverse('book_update', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        context['comments'] = BookComment.objects.filter(
+            book=self.object).order_by('-id')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden()
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        b = self.get_object()
+        text = form.cleaned_data['text']
+        new_comment = BookComment(text=text, book=b, user=self.request.user)
+        new_comment.save()
+        messages.success(self.request, "Your comment is added, thank you")
+        return super().form_valid(form)
+
+class BooksListView(ListView):
+    template_name = 'book/books.html'
+    model = Book
+
+    def get_context_data(self, **kwargs):
+        context = super(BooksListView, self).get_context_data(**kwargs)
+        context.update({
+            'top_3_books': Book.objects.order_by('-last_rating')[:3],
+            'most_reviews': Book.objects.annotate(reviews_count=Count('reviews')).order_by('-reviews_count')[:3],
+            'most_comments': Book.objects.annotate(comments_count=Count('comments')).order_by('-comments_count')[:3],
+        })
+        return context
+
+    def get_queryset(self):
+        return Book.objects.order_by('-id')[:3]
 
 class BookDelete(DeleteView):
     model = models.Book
@@ -122,6 +154,18 @@ class BookDelete(DeleteView):
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
 
+class SearchBookListView(ListView):
+    template_name = "book/search.html"
+    model = Book
+
+    def get_queryset(self):
+        queryset = super(SearchBookListView, self).get_queryset()
+        q = self.request.GET.get("q")
+        if q:
+            books_by_name = queryset.filter(name__icontains=q)
+            books_by_author = queryset.filter(author__icontains=q)
+            return books_by_author | books_by_name
+        return queryset
 
 class UserIndex(TemplateView):
     template_name = 'user/index.html'
@@ -133,11 +177,9 @@ class UserIndex(TemplateView):
         context['active_user'] = 'active'
         return context
 
-
 class UserCreate(CreateView):
-    template_name = 'user/index.html'
+    template_name = 'user/add.html'
     form_class = form.UserForm
-    # model = models.LibraryUser
     # fields = '__all__'
     success_url = reverse_lazy('user_index')
 
@@ -255,6 +297,95 @@ class LendBookUpdate(UpdateView):
         context['active_index'] = 'active'
         return context
 
+@login_required(login_url='login')
+def login_to_comment_redirect(request, pk):
+    return redirect('book_update', pk=pk)
+
+
+@login_required(login_url='login')
+def confirm_rent(request, pk):
+    try:
+        b = Book.objects.get(pk=pk)
+        if b.book_amount <= 0:
+            messages.warning(
+                request, f'You cant rent this book')
+            return redirect('book_update', pk=b.pk)
+    except Book.DoesNotExist:
+        raise Http404("We ont have this book")
+    return render(request, 'book/confirm_rent.html', {'book': b})
+
+
+@login_required(login_url='login')
+def rent_book(request, pk):
+    try:
+        b = Book.objects.get(pk=pk)
+        if b:
+            if b.book_amount > 0:
+                b.book_amount -= 1
+                b.save()
+                log_history = BookRentHistory(user=request.user, book=b)
+                log_history.save()
+                messages.success(
+                    request, f'You rent a book: {b.title}')
+            else:
+                messages.warning(
+                    request, f'You cant rent this book')
+                return redirect('book_update', pk=b.pk)
+    except Book.DoesNotExist:
+        raise Http404("Book is unavailable")
+    return redirect('UserProfile')
+
+
+@login_required(login_url='login')
+def return_book(request, pk):
+    try:
+        b = Book.objects.filter(pk=pk)[0]
+        if b:
+            b.book_amount += 1
+            b.save()
+            log_history = BookRentHistory.objects.filter(book=b)[0]
+            log_history.delete()
+            messages.success(
+                request, f'You successfully returned a book: {b.name}')
+        else:
+            messages.warning(
+                request, f'Error occurs, sorry')
+            return redirect('UserProfile')
+    except Book.DoesNotExist:
+        raise Http404("Book is unavailable now ")
+    return redirect('UserProfile')
+
+
+class CategoryBookListView(ListView):
+    template_name = "book/category.html"
+    model = Book
+
+    def get_queryset(self):
+        category = Category.objects.get(pk=self.kwargs['pk'])
+        return Book.objects.filter(category=category)
+
+
+@login_required(login_url='login')
+def rate_book(request, pk, rating):
+    try:
+        b = Book.objects.get(pk=pk)
+        if b and not(BookReview.objects.filter(user=request.user).filter(book=b)):
+            review = BookReview(book=b, user=request.user, rating=rating)
+            review.save()
+            b.last_rating = b.calc_rating
+            b.save()
+            messages.success(
+                request, f'You rated a book: {b.name}')
+
+        else:
+            messages.warning(
+                request, f'You already rated this book')
+        return redirect('book_update', pk=b.pk)
+    except Book.DoesNotExist:
+        raise Http404("Book is unavailable")
+    return redirect('book_update', pk=b.pk)
+
+
 def contact_form(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -268,7 +399,7 @@ def contact_form(request):
             new_message.message = message
             new_message.save()
             messages.success(request, "Your message is sent")
-            return redirect('home')
+            return redirect('index')
     if request.user.is_authenticated:
         form = ContactForm()
         form.fields['name'].initial = request.user.username
@@ -277,22 +408,10 @@ def contact_form(request):
         form.fields['name'].label = 'Login'
         form.fields['name'].widget.attrs['readonly'] = True
         form.fields['email'].widget.attrs['readonly'] = True
-        return render(request, 'books/contact.html', {'form': form})
+        return render(request, 'book/contact.html', {'form': form})
     else:
         form = ContactForm()
         form.fields['name'].widget.attrs['placeholder'] = 'Your name'
         form.fields['email'].widget.attrs['placeholder'] = 'Your email'
         form.fields['message'].widget.attrs['placeholder'] = 'Write your message here'
-        return render(request, 'books/contact.html', {'form': form})
-
-@login_required(login_url='login')
-def login_to_comment_redirect(request, slug):
-    return redirect('bookDetail', slug=slug)
-
-class CategoryBookListView(ListView):
-    template_name = "books/books_by_category.html"
-    model = Book
-
-    def get_queryset(self):
-        category = Category.objects.get(slug=self.kwargs['slug'])
-        return Book.objects.filter(category=category)
+        return render(request, 'book/contact.html', {'form': form})

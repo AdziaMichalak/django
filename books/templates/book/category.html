@@ -1,0 +1,36 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href={% url 'index' %}>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ book_list.first.category }}</li>
+    </ol>
+  </nav>
+
+<body style="background-color: rgb(153, 237, 57)">
+<br>
+<h2 style="margin-left: 220px">Books in category:  {{ book_list.first.category }}</h2><br>
+<div style="margin-left: 100px" class="row lastBooksContainer">
+    {% for book in book_list %}
+    <div class="col-md-3 bookCard">
+        <div class="cardBorder"><br>
+            <img class="book_image" src="{{ book.image.url }}" alt="Book image">
+            <h5>{{ book.title }}</h5>
+            <h6>{{ book.author }}</h6>
+            {% if book.actual_rating %}
+            {% for rate in book.actual_rating %}
+            <span class="fa fa-star checked"></span>
+            {% endfor %} <br>
+            {% else %}
+            <h6>Nobody rated</h6>
+            {% endif %}
+            
+            <a href="{% url 'book_update' pk=book.pk %}"><button class="btn btn-primary btn-xs">Book details</button></a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</body>
+{% endblock content %}

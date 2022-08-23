@@ -27,10 +27,11 @@ class BookForm(forms.ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     status = forms.ChoiceField(choices=STATUS, widget=forms.Select(attrs={'class': 'form-control'}))
     authors = forms.ModelMultipleChoiceField(queryset=models.Author.objects.all(), widget=forms.CheckboxSelectMultiple())
+    comment = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = models.Book
-        fields = ['name', 'authors', 'status', 'image', 'category']
+        fields = ['name', 'authors', 'status', 'image', 'category', 'last_rating', 'comment']
 
 
 class UserForm(forms.ModelForm):

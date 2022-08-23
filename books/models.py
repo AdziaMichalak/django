@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from PIL import Image
@@ -9,12 +9,10 @@ from PIL import Image
 class Category(models.Model):
     category = models.CharField(max_length=50)
     
-
     def __str__(self):
         return self.category
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.category)
         super(Category, self).save(*args, **kwargs)
 
     class Meta:
@@ -41,9 +39,30 @@ class Book(models.Model):
     authors = models.ManyToManyField('Author', through='Authored', verbose_name='Autor')
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, blank=True)
     image = models.ImageField(default='default_book.png', upload_to='books_pics')
+    last_rating = models.IntegerField(default=0)
+    comment = models.CharField(max_length=200, null=True, blank=True, verbose_name='Komentarz')
     
     
-    
+    @property
+    def actual_rating(self):
+        list_of_stars = []
+        for star in range(self.last_rating):
+            list_of_stars.append(star)
+        return list_of_stars
+
+    @property
+    def calc_rating(self):
+        ratings = BookReview.objects.filter(book=self)
+        if ratings:
+            result = 0
+            for rating in ratings:
+                result += rating.rating
+            result = int(result / len(ratings))
+            return result
+        else:
+            return 0
+
+        
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Book, self).save(*args, **kwargs)
@@ -103,8 +122,7 @@ class BorrowBook(models.Model):
 
 
 class BookComment(models.Model):
-    book = models.ForeignKey(
-        Book, on_delete=models.CASCADE, related_name='comments')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     text = models.CharField(max_length=300)
 
@@ -116,3 +134,18 @@ class InBoxMessages(models.Model):
 
     def __str__(self):
         return f'Message from {self.name}'
+
+class BookRentHistory(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.PROTECT, editable=False)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, editable=False, related_name='books')
+    rent_date = models.DateField(auto_now_add=True, editable=False)
+    back_date = models.DateField(default=datetime.now()+timedelta(days=30))
+
+    @property
+    def how_many_days(self):
+        return str(self.back_date - datetime.now().date())[:2]
+
+class BookReview(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    rating = models.IntegerField()

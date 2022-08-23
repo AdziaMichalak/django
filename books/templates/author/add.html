@@ -1,11 +1,11 @@
 {% extends "layout/base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
-
+<br>
 <div class="container">
     <div class="row">
         <div class="col"></div>
-        <div class="col ms-auto"><h1>Autorzy</h1></div>
+        <div class="col ms-3"><h1>Autorzy</h1><br></div>
         <div class="col"></div>
     </div>
     <div class="row">
@@ -13,7 +13,7 @@
         <div class="col ms-auto">
             <form action="{% url 'author_create' %}" method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form|crispy }}
                 <input class="btn btn-primary mb-3" type="submit" value="Dodaj">
             </form>
         </div>

@@ -1,5 +1,5 @@
 {% extends "layout/base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 
 <div class="container">
@@ -13,7 +13,7 @@
         <div class="col ms-auto">
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form|crispy }}
 
                 <input class="btn btn-primary mb-3" type="submit" value="Dodaj">
             </form>
