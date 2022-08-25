@@ -1,5 +1,5 @@
 {% extends "layout/base.html" %}
-
+{% load bootstrap4 %}
 {% block content %}
 
 <nav aria-label="breadcrumb">
@@ -9,25 +9,31 @@
     </ol>
   </nav>
 
-<body style="background-color: rgb(153, 237, 57)">
+<body style="background-color: rgb(57, 189, 237)">
 <br>
 <h2 style="margin-left: 220px">Books in category:  {{ book_list.first.category }}</h2><br>
-<div style="margin-left: 100px" class="row lastBooksContainer">
+<div class="row lastBooksContainer">
     {% for book in book_list %}
-    <div class="col-md-3 bookCard">
-        <div class="cardBorder"><br>
-            <img class="book_image" src="{{ book.image.url }}" alt="Book image">
-            <h5>{{ book.title }}</h5>
-            <h6>{{ book.author }}</h6>
+    <div class="col-md-4 bookCard">
+        <div style="background-color: rgb(47, 122, 202)" class="cardBorder">
+            <img class="book_image" src="{{ book.image.url }}" alt="Book image"><br>
+            <br>
+            <h6>{{ book.name }}</h6>
+            {% for author in book.authors.all %}
+            <p>{{ author.first_name }} {{ author.last_name }}</p>
+            {% endfor %}
             {% if book.actual_rating %}
             {% for rate in book.actual_rating %}
-            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+            </svg></span>
             {% endfor %} <br>
             {% else %}
-            <h6>Nobody rated</h6>
+            
+            <h6><b>Nobody rated</b></h6>
             {% endif %}
             
-            <a href="{% url 'book_update' pk=book.pk %}"><button class="btn btn-primary btn-xs">Book details</button></a>
+            <a href="{% url 'book_update' pk=book.pk %}"><button class="btn btn-success btn-xs">Book details</button></a>
         </div>
     </div>
     {% endfor %}

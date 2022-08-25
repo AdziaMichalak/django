@@ -31,7 +31,7 @@ class BookForm(forms.ModelForm):
 
     class Meta:
         model = models.Book
-        fields = ['name', 'authors', 'status', 'image', 'category', 'last_rating', 'comment']
+        fields = ['name', 'authors', 'status', 'image', 'category', 'last_rating', 'comment', 'created', 'modified']
 
 
 class UserForm(forms.ModelForm):
@@ -88,5 +88,5 @@ class ContactForm(forms.Form):
 
 
 class CommentForm(forms.Form):
-    text = forms.CharField(label='Add comment:', widget=forms.Textarea(
-        attrs={'rows': 4, 'cols': 15}))
+    text = forms.CharField(label='Add comment:', widget=forms.Textarea(attrs={'rows': 4, 'cols': 15}))
+

@@ -1,8 +1,8 @@
 {% extends "layout/base.html" %}
-
+{% load bootstrap4 %}
 {% block content %}
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col"></div>
         <div class="col"><p></p></div>
@@ -78,7 +78,7 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
+                  <th scope="col">Okładka</th>
                   <th scope="col">Tytuł</th>
                   <th scope="col">Autor</th>
                   <th scope="col">Kategoria</th>
@@ -88,13 +88,18 @@
               <tbody>
                 {% for book in books_available %}
                 <tr>
-                  <th scope="row">{{ book.id }}</th>
+                  <th><div><img class="book_image" src="{{ book.image.url }}" alt="Book image" width=50></div></th>
+                  <!-- <th scope="row">{{ book.id }}</th> -->
                   <td>{{ book.name }}</td>
                   <td>
                       {% for author in book.authors.all %}
-                        < {{ author.first_name }} , {{ author.last_name }} >
+                        {{ author.first_name }} {{ author.last_name }} 
                       {% endfor %}
                   </td>
+                  <th> {% for category in categories %}
+                    <a>{{ book_list.first.category }} </a>
+                    {% endfor %}
+                  </th>
                   {% if book.status == "D" %}
                   <td>Dostępna</td>
                   {% endif %}

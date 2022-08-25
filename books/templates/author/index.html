@@ -1,17 +1,17 @@
 {% extends "layout/base.html" %}
-
+{% load static %}
 {% block content %}
 
 <div class="container">
     <div class="row">
-        <div class="col ms-auto"><br>
-            <h1 style="margin-left: 450px">Autorzy</h1>
+        <div class="col-9"><br>
+            <h1 style="margin-left: 350px;">Autorzy</h1>
             <a class="btn btn-primary" href="{% url 'author_create' %}" role="button"><i class="bi bi-plus-square"></i> Dodaj Autora</a><br>
             <br/>
         </div>
     </div>
     <div class="row">
-        <div class="col ms-auto">
+      <div class="col-9">
             <table class="table">
               <thead>
                 <tr>
@@ -20,6 +20,7 @@
                   <th scope="col">Nazwisko</th>
                   <th scope="col">Data urodzenia</th>
                   <th scope="col">Historia</th>
+                  <th scope="col">#</th>
                 </tr>
               </thead>
               <tbody>
@@ -29,9 +30,10 @@
                   <td>{{ author.first_name }}</td>
                   <td>{{ author.last_name }}</td>
                   <td>{{ author.birth_date }}</td>
+                  <td> </td>
                   <td>
                       <a class="btn btn-primary" href="{% url 'author_update' author.id %}"><i class="bi bi-pencil"></i> Edytuj</a>
-                      <a class="btn btn-primary" href="{% url 'author_delete' author.id %}"><i class="bi bi-eraser"></i> Usuń</a>
+                      <a class="btn btn-danger" href="{% url 'author_delete' author.id %}"><i class="bi bi-eraser"></i> Usuń</a>
                   </td>
                 </tr>
                 {% endfor %}

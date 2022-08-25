@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <div class="col ms-auto"><br>
-            <h1 style="margin-left: 450px">Książki</h1>
+            <h1 style="margin-left: 300px"> Lista Książek</h1>
             <a class="btn btn-primary" href="{% url 'book_create' %}" role="button"><i class="bi bi-plus-square"></i> Dodaj książkę</a><br>
             <br/>
         </div>
@@ -15,22 +15,24 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
+                  <th scope="col">Okładka</th>
+                  <!-- <th scope="col">#</th> -->
                   <th scope="col">Tytuł</th>
                   <th scope="col">Autor</th>
                   <th scope="col">Kategoria</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Historia</th>
+                  <th scope="col"></th>
                 </tr>
               </thead>
               <tbody>
                 {% for book in books %}
                 <tr>
-                  <th scope="row">{{ book.id }}</th>
+                  <th><div><img class="book_image" src="{{ book.image.url }}" alt="Book image" width=50></div></th>
+                <!--  <th scope="row">{{ book.id }}</th> -->
                   <td>{{ book.name }}</td>
                   <td>
                       {% for author in book.authors.all %}
-                        < {{ author.first_name }} , {{ author.last_name }} >
+                      {{ author.first_name }} {{ author.last_name }} 
                       {% endfor %}
                   </td>
                   {% if book.status == "D" %}
@@ -39,12 +41,10 @@
                   {% if book.status == "N" %}
                   <td>Niedostępna</td>
                   {% endif %}
-                  {% if posts.image %}
-               <div><img src="{{ post.image.url }}" width=500></div>
-               {% endif %}
+                  <td> {{ book_list.first.category }} </td>
                   <td>
                       <a class="btn btn-primary" href="{% url 'book_update' book.id %}"><i class="bi bi-pencil"></i> Edytuj</a>
-                      <a class="btn btn-primary" href="{% url 'book_delete' book.id %}"><i class="bi bi-eraser"></i>Usuń</a>
+                      <a class="btn btn-danger" href="{% url 'book_delete' book.id %}"><i class="bi bi-eraser"></i>Usuń</a>
                   </td>
                 </tr>
                 {% endfor %}

@@ -2,8 +2,16 @@ from django.contrib import admin
 from django.urls import path
 from books import views
 from books.views import (
-    BookDetailView, 
-    BooksListView, 
+    HomeListView,
+    AuthorIndex,
+    AuthorCreate,
+    AuthorUpdate,
+    AuthorDelete,
+    HomeListView,
+    BookIndex,
+    BookCreate,
+    BookUpdate,
+    BookDelete,  
     CategoryBookListView, 
     contact_form, 
     login_to_comment_redirect, 
@@ -16,15 +24,16 @@ from books.views import (
 
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
-    path('authors/', views.AuthorIndex.as_view(), name='author_index'),
-    path('authors/add', views.AuthorCreate.as_view(), name='author_create'),
-    path('authors/<int:pk>', views.AuthorUpdate.as_view(), name='author_update'),
-    path('authors/<int:pk>/delete', views.AuthorDelete.as_view(), name='author_delete'),
-    path('books/', views.BookIndex.as_view(), name='book_index'),
-    path('books/add', views.BookCreate.as_view(), name='book_create'),
-    path('books/<int:pk>', views.BookUpdate.as_view(), name='book_update'),
-    path('books/<int:pk>/delete', views.BookDelete.as_view(), name='book_delete'),
+    path('index', views.IndexView.as_view(), name='index'),
+    path('', HomeListView.as_view(), name='home'),
+    path('authors/', AuthorIndex.as_view(), name='author_index'),
+    path('authors/add', AuthorCreate.as_view(), name='author_create'),
+    path('authors/<int:pk>', AuthorUpdate.as_view(), name='author_update'),
+    path('authors/<int:pk>/delete', AuthorDelete.as_view(), name='author_delete'),
+    path('books/', BookIndex.as_view(), name='book_index'),
+    path('books/add', BookCreate.as_view(), name='book_create'),
+    path('books/<int:pk>', BookUpdate.as_view(), name='book_update'),
+    path('books/<int:pk>/delete', BookDelete.as_view(), name='book_delete'),
     path('books/<int:pk>/<rating>', rate_book, name='rate_book'),
     path('books/return-book/<int:pk>', return_book, name='return_book'),
     path('book/rent-book/<int:pk>', rent_book, name='rent_book'),
@@ -38,6 +47,6 @@ urlpatterns = [
     path('contact/', contact_form, name='contact'),
     path('redirect-to-detail/<int:pk>', login_to_comment_redirect, name='login_to_comment_redirect'),
     path('category/<int:pk>', CategoryBookListView.as_view(), name='category'),
-    path('search-book-results/', SearchBookListView.as_view(), name='search'),
+    path('search/', SearchBookListView.as_view(), name='search'),
     
 ]

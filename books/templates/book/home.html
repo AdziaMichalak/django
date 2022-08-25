@@ -1,20 +1,25 @@
 {% extends "layout/base.html" %}
-
+{% load static %}
 {% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Witam!  Welcome!</h1>
+    
+    <hr class="my-4">
+    <p>
+        <h5>Search book</h5>
+        <form class="searchForm" action="{% url 'search' %}" method=" GET">
+            <div class="form-group row">
+                <input class="form-control col-md-7" required="required" name="q" type="text" placeholder="Write name or author">
+                <span class="col-md-1"></span>
+                <button type="submit" class="btn btn-primary form-control col-md-2"> Szukaj </button>
+            </div>
+        </form>
 
-<p>
-    <h5>Wyszukiwarka</h5>
-    <form class="searchForm" action="{% url 'search' %}" method=" GET">
-        <div class="form-group row">
-            <input class="form-control col-md-7" required="required" name="q" type="text" placeholder="Write title or author">
-            <span class="col-md-1"></span>
-            <button type="submit" class="btn btn-primary form-control col-md-2">Search</button>
-        </div>
-    </form>
-</p>
-<h2>Search results for: "{{ request.GET.q }}":</h2>
+    </p>
+</div>
+<hr class="my-4">
+<h2>Recenlty added books:</h2>
 <div class="row lastBooksContainer">
-    {% if book_list %}
     {% for book in book_list %}
     <div class="col-md-4 bookCard">
         <div style="background-color: rgb(47, 122, 202)" class="cardBorder">
@@ -35,14 +40,9 @@
             <h6><b>Nobody rated</b></h6>
             {% endif %}
             
-            <a href="{% url 'search' %}"><button class="btn btn-success btn-xs">Book details</button></a>
+            <a href="{% url 'book_update' pk=book.pk %}"><button class="btn btn-success btn-xs">Book details</button></a>
         </div>
     </div>
     {% endfor %}
-    {% else %}
-    <h5 style="margin-left:30px;"> We don't have that book :/</h5>
-    {% endif %}
-
-
 </div>
 {% endblock content %}

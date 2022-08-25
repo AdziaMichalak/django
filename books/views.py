@@ -8,9 +8,18 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, TemplateView, DetailView, FormView, UpdateView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from books.models import Book, BookComment, Category, InBoxMessages, BookReview, BookRentHistory
+from books.models import Book, BookComment, Category, InBoxMessages, BookReview, BookRentHistory, Author
 from books import form, models
 from books.form import ContactForm, CommentForm
+
+class HomeListView(ListView):
+    template_name = 'book/home.html'
+    model = Book
+
+    def get_queryset(self):
+        queryset = super(HomeListView, self).get_queryset()
+        return queryset.all().order_by('-id')[:9]
+
 
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -98,7 +107,7 @@ class BookUpdate(UpdateView):
         return context
 
 class BookDetailView(FormMixin, DetailView):
-    template_name = "book/books.html"
+    template_name = "book/book_detail.html"
     model = Book
     form_class = CommentForm
 
@@ -160,12 +169,13 @@ class SearchBookListView(ListView):
 
     def get_queryset(self):
         queryset = super(SearchBookListView, self).get_queryset()
-        q = self.request.GET.get("q")
+        q = self.request.GET.get("")
         if q:
             books_by_name = queryset.filter(name__icontains=q)
-            books_by_author = queryset.filter(author__icontains=q)
-            return books_by_author | books_by_name
+            books_by_authors = queryset.filter(authors__icontains=q)
+            return books_by_authors | books_by_name
         return queryset
+    
 
 class UserIndex(TemplateView):
     template_name = 'user/index.html'

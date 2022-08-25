@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from PIL import Image
+from django.utils import timezone
 
 
 class Category(models.Model):
@@ -41,7 +42,11 @@ class Book(models.Model):
     image = models.ImageField(default='default_book.png', upload_to='books_pics')
     last_rating = models.IntegerField(default=0)
     comment = models.CharField(max_length=200, null=True, blank=True, verbose_name='Komentarz')
+    created = models.DateTimeField(default=timezone.now)
+    modified = models.DateTimeField(default=timezone.now)
     
+    def __str__(self):
+        return self.name
     
     @property
     def actual_rating(self):
@@ -72,10 +77,6 @@ class Book(models.Model):
             output_size = (150, 300)
             img.thumbnail(output_size)
             img.save(self.image.path)
-
-
-    def __str__(self):
-        return "%s" % self.name
 
 
 class Authored(models.Model):
@@ -121,6 +122,23 @@ class BorrowBook(models.Model):
         return "%s %s" % (self.library_user.name, self.book.name)
 
 
+class BookRentHistory(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.PROTECT, editable=False)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, editable=False, related_name='books')
+    rent_date = models.DateField(auto_now_add=True, editable=False)
+    back_date = models.DateField(default=datetime.now()+timedelta(days=30))
+
+    @property
+    def how_many_days(self):
+        return str(self.back_date - datetime.now().date())[:2]
+
+
+class BookReview(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    rating = models.IntegerField()
+
+
 class BookComment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -134,18 +152,3 @@ class InBoxMessages(models.Model):
 
     def __str__(self):
         return f'Message from {self.name}'
-
-class BookRentHistory(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.PROTECT, editable=False)
-    user = models.ForeignKey(User, on_delete=models.PROTECT, editable=False, related_name='books')
-    rent_date = models.DateField(auto_now_add=True, editable=False)
-    back_date = models.DateField(default=datetime.now()+timedelta(days=30))
-
-    @property
-    def how_many_days(self):
-        return str(self.back_date - datetime.now().date())[:2]
-
-class BookReview(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    rating = models.IntegerField()
