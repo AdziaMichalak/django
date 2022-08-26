@@ -163,11 +163,11 @@ class SearchBookListView(ListView):
 
     def get_queryset(self):
         queryset = super(SearchBookListView, self).get_queryset()
-        q = self.request.GET.get("q")
+        q = self.request.GET.get("name", "")
         if q:
-            books_by_name = queryset.filter(name__icontains=q)
-            books_by_authors = queryset.filter(authors__icontains=q)
-            return books_by_authors | books_by_name
+            book_by_name = queryset.filter(name__icontains=q)
+            book_by_authors = queryset.filter(authors__icontains=q)
+            return book_by_authors | book_by_name
         return queryset
 
 
@@ -270,6 +270,9 @@ class CategoryBookListView(ListView):
     def get_queryset(self):
         category = Category.objects.get(pk=self.kwargs['pk'])
         return Book.objects.filter(category=category)
+    
+    def get_absolute_url(self):
+        return reverse('article-view', args=(str(self.pk)))
 
 
 @login_required(login_url='login')
@@ -283,7 +286,6 @@ def rate_book_view(request, pk, rating):
             b.save()
             messages.success(
                 request, f'You rated a book: {b.name}')
-
         else:
             messages.warning(
                 request, f'You already rated this book')

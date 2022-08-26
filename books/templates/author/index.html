@@ -5,8 +5,8 @@
 <div class="container">
     <div class="row">
         <div class="col-9"><br>
-            <h1 style="margin-left: 350px;">Autorzy</h1>
-            <a class="btn btn-primary" href="{% url 'author_create' %}" role="button"><i class="bi bi-plus-square"></i> Dodaj Autora</a><br>
+            <h1 style="margin-left: 300px;">Lista autorów</h1>
+            <a class="btn btn-success" href="{% url 'author_create' %}" role="button"><i class="bi bi-plus-square"></i> Dodaj Autora</a><br>
             <br/>
         </div>
     </div>
@@ -15,7 +15,7 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
+                 
                   <th scope="col">Imię</th>
                   <th scope="col">Nazwisko</th>
                   <th scope="col">Data urodzenia</th>
@@ -25,7 +25,7 @@
               <tbody>
                 {% for author in authors %}
                 <tr>
-                  <th scope="row">{{ author.id }}</th>
+                  
                   <td>{{ author.first_name }}</td>
                   <td>{{ author.last_name }}</td>
                   <td>{{ author.birth_date }}</td>

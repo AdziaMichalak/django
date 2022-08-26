@@ -26,11 +26,11 @@
         <a href="#commentBox">Number of comments ({{ book.comments.count }})</a>
         {% if book.book_amount > 0 %}
         <h5><strong>Available Book amount :</strong> {{ book.book_amount }}</h5>
-        {% if user.is_authenticated %}
+        
         <a href="{% url 'confirm_rent' pk=book.pk %}"><button class="btn btn-primary btn-xs">Rent</button></a>
-        {% else %}
+        
         <a href="{% url 'confirm_rent' pk=book.pk %}"><button class="btn btn-primary btn-xs">Login to rent book</button></a>
-        {% endif %}
+        
         {% else %}
         <h5><strong>Available Book amount : </strong>none</h5>
         {% endif %} <br>
@@ -52,7 +52,7 @@
                 <button type="submit" class="btn btn-success">Add comment</button>
             </form>
             {% else %}
-            <a href="{% url 'login_to_comment_redirect' id=book.id %}"><button class="btn btn-primary btn-xs">Add
+            <a href="{% url 'login_to_comment_redirect' pk=book.pk %}"><button class="btn btn-primary btn-xs">Add
                     comment (login)</button></a>
             {% endif %}
 

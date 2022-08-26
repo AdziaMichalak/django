@@ -4,14 +4,14 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href={% url 'home' %}>Home</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ book_list.first.category }}</li>
+      <li class="breadcrumb-item"><a href={% url 'home' %}>Home </a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ book_list.first.category }} </li>
     </ol>
   </nav>
 
 <body>
 <br>
-<h2 style="margin-left: 220px">Books in category:  {{ book_list.first.category }}</h2><br>
+<h2 style="margin-left: 220px">Books in category:  {{ book_list.first.category }} </h2><br>
 <div class="row lastBooksContainer">
     {% for book in book_list %}
     <div class="col-md-4 bookCard">
@@ -33,7 +33,7 @@
             <h6><b>Nobody rated</b></h6>
             {% endif %}
             
-            <a href="{% url 'books' pk=book.pk %}"><button class="btn btn-success btn-xs">Book details</button></a>
+            <a href="{% url 'bookDetail' pk=book.pk %}"><button class="btn btn-success btn-xs">Book details</button></a>
         </div>
     </div>
     {% endfor %}

@@ -71,3 +71,17 @@ class ContactForm(forms.Form):
 class CommentForm(forms.Form):
     text = forms.CharField(label='Add comment:', widget=forms.Textarea(attrs={'rows': 4, 'cols': 15}))
 
+
+class BookForm(forms.ModelForm):
+    STATUS = (
+        ('D', 'Dostępna'),
+        ('N', 'Niedostępna'),
+    )
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    status = forms.ChoiceField(choices=STATUS, widget=forms.Select(attrs={'class': 'form-control'}))
+    authors = forms.ModelMultipleChoiceField(queryset=models.Author.objects.all(),
+                                             widget=forms.CheckboxSelectMultiple())
+
+    class Meta:
+        model = models.Book
+        fields = ['name', 'authors', 'status']

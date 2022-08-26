@@ -18,4 +18,7 @@ class Category(admin.ModelAdmin):
     list_display = ["id", "category"]
 
 admin.site.register(Profile)
-admin.site.register(BorrowBook)
+
+@admin.register(BorrowBook)
+class BorrowBook(admin.ModelAdmin):
+    list_display = ["status", "library_user", "book", "lend_date", "return_date"]

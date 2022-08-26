@@ -29,10 +29,12 @@ class Profile(models.Model):
 class Category(models.Model):
     category = models.CharField(max_length=50)
     
+
     def __str__(self):
         return self.category
 
     def save(self, *args, **kwargs):
+        self.slug = slugify(self.category)
         super(Category, self).save(*args, **kwargs)
 
     class Meta:
@@ -68,10 +70,7 @@ class Book(models.Model):
     modified = models.DateTimeField(default=timezone.now)
         
     def __str__(self):
-        return f"Name: {self.name} | Authors: {self.authors}"
-    
-    class Meta:
-        ordering = ["name"]
+        return "%s" % self.name
     
     @property
     def actual_rating(self):
@@ -110,6 +109,7 @@ class Authored(models.Model):
 
 
 class LibraryUser(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Tytuł', null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     
     def __str__(self):
@@ -121,7 +121,7 @@ def validate_lend(value):
     print(count_days.days)
     if count_days.days < 0:
         raise ValidationError(
-            ('Liczna dni'),
+            ('Liczba dni'),
             params={'value': value},
         )
     if count_days.days > 3:
