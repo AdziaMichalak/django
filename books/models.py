@@ -5,6 +5,25 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from PIL import Image
 from django.utils import timezone
+from django.db import models
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(default='default.png', upload_to='profile_pics')
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
+    def save(self, **kwargs):
+        super().save()
+
+        img = Image.open(self.image.path)
+
+        if img.height > 200 or img.width > 200:
+            output_size = (200, 200)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
 
 
 class Category(models.Model):
@@ -28,6 +47,9 @@ class Author(models.Model):
     
     def __str__(self):
         return "%s %s" % (self.first_name, self.last_name)
+    
+    class Meta:
+        ordering = ["first_name", "last_name"]
 
 
 class Book(models.Model):
@@ -44,9 +66,12 @@ class Book(models.Model):
     comment = models.CharField(max_length=200, null=True, blank=True, verbose_name='Komentarz')
     created = models.DateTimeField(default=timezone.now)
     modified = models.DateTimeField(default=timezone.now)
-    
+        
     def __str__(self):
-        return self.name
+        return f"Name: {self.name} | Authors: {self.authors}"
+    
+    class Meta:
+        ordering = ["name"]
     
     @property
     def actual_rating(self):

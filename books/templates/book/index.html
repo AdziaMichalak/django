@@ -43,8 +43,10 @@
                   {% endif %}
                   <td> {{ book_list.first.category }} </td>
                   <td>
-                      <a class="btn btn-primary" href="{% url 'book_update' book.id %}"><i class="bi bi-pencil"></i> Edytuj</a>
-                      <a class="btn btn-danger" href="{% url 'book_delete' book.id %}"><i class="bi bi-eraser"></i>Usuń</a>
+                    <!--
+                      <a class="btn btn-primary" href="{% url 'bookDetail' pk=book.pk %}"><i class="bi bi-pencil"></i> Edytuj</a>
+                      <a class="btn btn-danger" href="{% url 'book_delete' pk=book.pk %}"><i class="bi bi-eraser"></i>Usuń</a>
+                      -->
                   </td>
                 </tr>
                 {% endfor %}

@@ -11,25 +11,69 @@ from django.contrib.auth.decorators import login_required
 from books.models import Book, BookComment, Category, InBoxMessages, BookReview, BookRentHistory, Author
 from books import form, models
 from books.form import ContactForm, CommentForm
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic import CreateView, FormView, TemplateView
+from books.form import ProfileUpdateForm, UserRegisterForm, UserUpdateForm
 
-class HomeListView(ListView):
-    template_name = 'book/home.html'
-    model = Book
 
-    def get_queryset(self):
-        queryset = super(HomeListView, self).get_queryset()
-        return queryset.all().order_by('-id')[:9]
+class SignUpView(SuccessMessageMixin, CreateView):
+    form_class = UserRegisterForm
+    success_url = reverse_lazy('login')
+    template_name = 'users/signup.html'
+    success_message = "Now you are registered, try to log in!"
 
 
-class IndexView(TemplateView):
-    template_name = 'index.html'
+class UserDetailView(LoginRequiredMixin, TemplateView):
+    login_url = "login"
+    template_name = 'users/user_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['lendbooks'] = models.BorrowBook.objects.all()
-        context['books_available'] = models.Book.objects.filter(status='D')
-        context['active_index'] = 'active'
-        return context
+
+class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, FormView):
+    login_url = "login"
+    form_class = UserUpdateForm
+    p_form = ProfileUpdateForm()
+    template_name = 'users/user_form.html'
+    success_url = reverse_lazy('UserProfile')
+    success_message = "Now your profile is updated!"
+
+    def form_valid(self, form):
+        self.request.user.username = self.request.POST['username']
+        self.request.user.email = self.request.POST['email']
+        self.request.user.save()
+        return super().form_valid(form)
+
+    def get_initial(self):
+        initial = super(UserUpdateView, self).get_initial()
+        initial['username'] = self.request.user.username
+        initial['email'] = self.request.user.email
+        return initial
+
+
+class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, FormView):
+    login_url = "login"
+    form_class = ProfileUpdateForm
+    template_name = 'users/user_form.html'
+    success_url = reverse_lazy('UserProfile')
+    success_message = "Now you photo is updated"
+
+    def form_valid(self, form):
+        if 'image' in self.request.FILES:
+            self.request.user.profile.image = self.request.FILES['image']
+            self.request.user.profile.save()
+            return super().form_valid(form)
+        else:
+            messages.add_message(self.request, messages.INFO,
+                                 'Your profile pic is not change')
+            return HttpResponseRedirect(reverse_lazy('UserProfile'))
+
+    def get_initial(self):
+        initial = super(ProfileUpdateView, self).get_initial()
+        initial['image'] = self.request.user.profile.image
+        return initial
 
 
 class AuthorIndex(TemplateView):
@@ -75,7 +119,7 @@ class AuthorDelete(DeleteView):
     # return without confirmation template
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
-
+        
 
 class BookIndex(TemplateView):
     template_name = 'book/index.html'
@@ -87,24 +131,45 @@ class BookIndex(TemplateView):
         return context
 
 
-class BookCreate(CreateView):
-    template_name = 'book/add.html'
-    form_class = form.BookForm
-    model = models.Book
-    success_url = reverse_lazy('book_index')
-    
+class HomeListView(ListView):
+    template_name = 'book/home.html'
+    model = Book
 
-class BookUpdate(UpdateView):
-    template_name = 'book/update.html'
-    form_class = form.BookForm
-    model = models.Book
-    # fields = ['name', 'authors', 'status']
-    success_url = reverse_lazy('book_index')
+    def get_queryset(self):
+        queryset = super(HomeListView, self).get_queryset()
+        return queryset.all().order_by('-id')[:9]
+
+
+class BooksListView(ListView):
+    template_name = 'book/books.html'
+    model = Book
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['active_book'] = 'active'
+        context = super(BooksListView, self).get_context_data(**kwargs)
+        context.update({
+            'top_3_books': Book.objects.order_by('-last_rating')[:3],
+            'most_reviews': Book.objects.annotate(reviews_count=Count('reviews')).order_by('-reviews_count')[:3],
+            'most_comments': Book.objects.annotate(comments_count=Count('comments')).order_by('-comments_count')[:3],
+        })
         return context
+
+    def get_queryset(self):
+        return Book.objects.order_by('-id')[:3]
+
+
+class SearchBookListView(ListView):
+    template_name = "book/search.html"
+    model = Book
+
+    def get_queryset(self):
+        queryset = super(SearchBookListView, self).get_queryset()
+        q = self.request.GET.get("q")
+        if q:
+            books_by_name = queryset.filter(name__icontains=q)
+            books_by_authors = queryset.filter(authors__icontains=q)
+            return books_by_authors | books_by_name
+        return queryset
+
 
 class BookDetailView(FormMixin, DetailView):
     template_name = "book/book_detail.html"
@@ -112,13 +177,12 @@ class BookDetailView(FormMixin, DetailView):
     form_class = CommentForm
 
     def get_success_url(self):
-        return reverse('book_update', kwargs={'pk': self.object.pk})
+        return reverse('bookDetail', kwargs={'pk': self.object.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.get_form()
-        context['comments'] = BookComment.objects.filter(
-            book=self.object).order_by('-id')
+        context['comments'] = BookComment.objects.filter(book=self.object).order_by('-id')
         return context
 
     def post(self, request, *args, **kwargs):
@@ -139,194 +203,27 @@ class BookDetailView(FormMixin, DetailView):
         messages.success(self.request, "Your comment is added, thank you")
         return super().form_valid(form)
 
-class BooksListView(ListView):
-    template_name = 'book/books.html'
-    model = Book
-
-    def get_context_data(self, **kwargs):
-        context = super(BooksListView, self).get_context_data(**kwargs)
-        context.update({
-            'top_3_books': Book.objects.order_by('-last_rating')[:3],
-            'most_reviews': Book.objects.annotate(reviews_count=Count('reviews')).order_by('-reviews_count')[:3],
-            'most_comments': Book.objects.annotate(comments_count=Count('comments')).order_by('-comments_count')[:3],
-        })
-        return context
-
-    def get_queryset(self):
-        return Book.objects.order_by('-id')[:3]
-
-class BookDelete(DeleteView):
-    model = models.Book
-    success_url = reverse_lazy('book_index')
-
-    # return without confirmation template
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
-class SearchBookListView(ListView):
-    template_name = "book/search.html"
-    model = Book
-
-    def get_queryset(self):
-        queryset = super(SearchBookListView, self).get_queryset()
-        q = self.request.GET.get("")
-        if q:
-            books_by_name = queryset.filter(name__icontains=q)
-            books_by_authors = queryset.filter(authors__icontains=q)
-            return books_by_authors | books_by_name
-        return queryset
-    
-
-class UserIndex(TemplateView):
-    template_name = 'user/index.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['users'] = models.LibraryUser.objects.all()
-        print(models.LibraryUser.objects.all())
-        context['active_user'] = 'active'
-        return context
-
-class UserCreate(CreateView):
-    template_name = 'user/add.html'
-    form_class = form.UserForm
-    # fields = '__all__'
-    success_url = reverse_lazy('user_index')
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        first_name = form.cleaned_data['first_name']
-        last_name = form.cleaned_data['last_name']
-        email = form.cleaned_data['email']
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password']
-
-        user = User.objects.create_user(username, email, password)
-        user.first_name = first_name
-        user.last_name = last_name
-        user.save()
-
-        models.LibraryUser.objects.create(user=user)
-
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['active_user'] = 'active'
-        return context
-
-
-class UserUpdate(UpdateView):
-    template_name = 'user/update.html'
-    form_class = form.UserUpdateForm
-    model = models.LibraryUser
-    # fields = '__all__'
-    success_url = reverse_lazy('user_index')
-
-    def get_initial(self):
-        library_user = models.LibraryUser.objects.get(id=self.get_object().pk)
-        user = User.objects.get(id=library_user.user.id)
-        return {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'username': user.username,
-        }
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['active_user'] = 'active'
-        return context
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        library_user = models.LibraryUser.objects.get(id=self.get_object().pk)
-        try:
-            user = User.objects.get(id=library_user.user.id)
-            user.first_name = form.cleaned_data['first_name']
-            user.last_name = form.cleaned_data['last_name']
-            user.email = form.cleaned_data['email']
-            user.username = form.cleaned_data['username']
-            user.save()
-        except:
-            pass
-
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class UserDelete(DeleteView):
-    model = models.LibraryUser
-    success_url = reverse_lazy('user_index')
-
-    # return without confirmation template
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
-
-class LendBookCreate(CreateView):
-    template_name = 'borrowbook/add.html'
-    form_class = form.LendBookForm
-    success_url = reverse_lazy('index')
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-
-        name = form.cleaned_data['book']
-        models.Book.objects.filter(name=name).update(status='N')
-
-        form.save()
-
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['active_index'] = 'active'
-        return context
-
-
-class LendBookUpdate(UpdateView):
-    template_name = 'borrowbook/update.html'
-    form_class = form.LendBookUpdateForm
-    model = models.BorrowBook
-    # fields = ['status', 'return_date']
-    success_url = reverse_lazy('index')
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        print(self.object.status)
-        if self.object.status == 'D':
-            models.Book.objects.filter(name=self.object.book.name).update(status='D')
-        if self.object.status != 'D':
-            models.Book.objects.filter(name=self.object.book.name).update(status='N')
-
-        form.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['active_index'] = 'active'
-        return context
 
 @login_required(login_url='login')
 def login_to_comment_redirect(request, pk):
-    return redirect('book_update', pk=pk)
+    return redirect('bookDetail', pk=pk)
 
 
 @login_required(login_url='login')
-def confirm_rent(request, pk):
+def confirm_rent_view(request, pk):
     try:
         b = Book.objects.get(pk=pk)
         if b.book_amount <= 0:
             messages.warning(
                 request, f'You cant rent this book')
-            return redirect('book_update', pk=b.pk)
+            return redirect('bookDetail', pk=b.pk)
     except Book.DoesNotExist:
         raise Http404("We ont have this book")
     return render(request, 'book/confirm_rent.html', {'book': b})
 
 
 @login_required(login_url='login')
-def rent_book(request, pk):
+def rent_book_view(request, pk):
     try:
         b = Book.objects.get(pk=pk)
         if b:
@@ -336,18 +233,18 @@ def rent_book(request, pk):
                 log_history = BookRentHistory(user=request.user, book=b)
                 log_history.save()
                 messages.success(
-                    request, f'You rent a book: {b.title}')
+                    request, f'You rent a book: {b.name}')
             else:
                 messages.warning(
                     request, f'You cant rent this book')
-                return redirect('book_update', pk=b.pk)
+                return redirect('bookDetail', pk=b.pk)
     except Book.DoesNotExist:
         raise Http404("Book is unavailable")
     return redirect('UserProfile')
 
 
-@login_required(login_url='login')
-def return_book(request, pk):
+login_required(login_url='login')
+def return_book_view(request, pk):
     try:
         b = Book.objects.filter(pk=pk)[0]
         if b:
@@ -376,7 +273,7 @@ class CategoryBookListView(ListView):
 
 
 @login_required(login_url='login')
-def rate_book(request, pk, rating):
+def rate_book_view(request, pk, rating):
     try:
         b = Book.objects.get(pk=pk)
         if b and not(BookReview.objects.filter(user=request.user).filter(book=b)):
@@ -390,10 +287,10 @@ def rate_book(request, pk, rating):
         else:
             messages.warning(
                 request, f'You already rated this book')
-        return redirect('book_update', pk=b.pk)
+        return redirect('bookDetail', pk=b.pk)
     except Book.DoesNotExist:
         raise Http404("Book is unavailable")
-    return redirect('book_update', pk=b.pk)
+    return redirect('bookDetail', pk=b.pk)
 
 
 def contact_form(request):
@@ -409,7 +306,7 @@ def contact_form(request):
             new_message.message = message
             new_message.save()
             messages.success(request, "Your message is sent")
-            return redirect('index')
+            return redirect('home')
     if request.user.is_authenticated:
         form = ContactForm()
         form.fields['name'].initial = request.user.username

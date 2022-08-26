@@ -1,11 +1,31 @@
 from django import forms
 from . import models
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django import forms
 
-STATUS = (
-        ('w', 'Wypożyczona'),
-        ('Z', 'Zwrócona'),
-        ('N', 'Nie zwrócono'),
-    )
+from .models import Profile
+
+class UserRegisterForm(UserCreationForm):
+    email = forms.EmailField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
+
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['image']
 
 
 class AuthorForm(forms.ModelForm):
@@ -17,21 +37,6 @@ class AuthorForm(forms.ModelForm):
     class Meta:
         model = models.Author
         fields = ['first_name', 'last_name', 'birth_date']
-
-
-class BookForm(forms.ModelForm):
-    STATUS = (
-        ('D', 'Dostępna'),
-        ('N', 'Niedostępna'),
-    )
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    status = forms.ChoiceField(choices=STATUS, widget=forms.Select(attrs={'class': 'form-control'}))
-    authors = forms.ModelMultipleChoiceField(queryset=models.Author.objects.all(), widget=forms.CheckboxSelectMultiple())
-    comment = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-
-    class Meta:
-        model = models.Book
-        fields = ['name', 'authors', 'status', 'image', 'category', 'last_rating', 'comment', 'created', 'modified']
 
 
 class UserForm(forms.ModelForm):
@@ -55,30 +60,6 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = models.LibraryUser
         fields = ['first_name', 'last_name', 'email', 'username']
-
-
-class LendBookForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=STATUS, widget=forms.Select(attrs={'class': 'form-control'}))
-    book = forms.ModelChoiceField(queryset=models.Book.objects.filter(status='D'),
-                                  widget=forms.Select(attrs={'class': 'form-control'}))
-    library_user = forms.ModelChoiceField(queryset=models.LibraryUser.objects.all(),
-                                          widget=forms.Select(attrs={'class': 'form-control'}))
-    lend_date = forms.DateTimeField(input_formats=['%Y-%m-%d'],
-                                    widget=forms.DateTimeInput(attrs={'class': 'form-control'}, format='%Y-%m-%d'))
-
-    class Meta:
-        model = models.BorrowBook
-        fields = ['status', 'library_user', 'book', 'lend_date']
-
-
-class LendBookUpdateForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=STATUS, widget=forms.Select(attrs={'class': 'form-control'}))
-    return_date = forms.DateTimeField(input_formats=['%Y-%m-%d'],
-                                      widget=forms.DateTimeInput(attrs={'class': 'form-control'}, format='%Y-%m-%d'), required=False)
-
-    class Meta:
-        model = models.BorrowBook
-        fields = ['status', 'return_date']
 
 
 class ContactForm(forms.Form):

@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="row">
-      <div class="col-9">
+      <div class="col">
             <table class="table">
               <thead>
                 <tr>
@@ -19,8 +19,7 @@
                   <th scope="col">Imię</th>
                   <th scope="col">Nazwisko</th>
                   <th scope="col">Data urodzenia</th>
-                  <th scope="col">Historia</th>
-                  <th scope="col">#</th>
+                  <th scope="col">     </th>
                 </tr>
               </thead>
               <tbody>
@@ -30,7 +29,7 @@
                   <td>{{ author.first_name }}</td>
                   <td>{{ author.last_name }}</td>
                   <td>{{ author.birth_date }}</td>
-                  <td> </td>
+                  
                   <td>
                       <a class="btn btn-primary" href="{% url 'author_update' author.id %}"><i class="bi bi-pencil"></i> Edytuj</a>
                       <a class="btn btn-danger" href="{% url 'author_delete' author.id %}"><i class="bi bi-eraser"></i> Usuń</a>
