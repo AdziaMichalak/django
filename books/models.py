@@ -61,7 +61,7 @@ class Book(models.Model):
     )
     name = models.CharField(max_length=100, verbose_name='Tytuł')
     status = models.CharField(max_length=1, choices=STATUS, default='D', verbose_name='Status')
-    authors = models.ManyToManyField('Author', through='Authored', verbose_name='Autor')
+    authors = models.CharField(max_length=100, null=True, blank=True, verbose_name='Autor')
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, blank=True)
     image = models.ImageField(default='default_book.png', upload_to='books_pics')
     last_rating = models.IntegerField(default=0)
