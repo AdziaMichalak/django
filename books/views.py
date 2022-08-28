@@ -131,6 +131,55 @@ class BookIndex(TemplateView):
         return context
 
 
+class BookCreate(CreateView):
+    template_name = 'book/add.html'
+    form_class = form.BookForm
+    # model = models.Book
+    # fields = ['name', 'authors', 'status']
+    success_url = reverse_lazy('book_index')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        name = form.cleaned_data['name']
+
+        book = models.Book(name=name)
+        book.save()
+
+        # author_list = models.Author.objects.filter(pk__in=author)
+        # print(author_list)
+        for author in form.cleaned_data['authors']:
+            book.authors.add(author)
+        print(book.authors.all())
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_book'] = 'active'
+        return context
+
+
+class BookUpdate(UpdateView):
+    template_name = 'book/update.html'
+    form_class = form.BookForm
+    model = models.Book
+    #fields = ['name', 'authors', 'status']
+    success_url = reverse_lazy('book_index')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_book'] = 'active'
+        return context
+
+
+class BookDelete(DeleteView):
+    model = models.Book
+    success_url = reverse_lazy('book_index')
+
+    # return without confirmation template
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+
 class HomeListView(ListView):
     template_name = 'book/home.html'
     model = Book

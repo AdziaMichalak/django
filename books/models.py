@@ -68,6 +68,7 @@ class Book(models.Model):
     comment = models.CharField(max_length=200, null=True, blank=True, verbose_name='Komentarz')
     created = models.DateTimeField(default=timezone.now)
     modified = models.DateTimeField(default=timezone.now)
+    book_amount = models.IntegerField(default=0)
         
     def __str__(self):
         return "%s" % self.name

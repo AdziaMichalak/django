@@ -8,7 +8,7 @@ class Author(admin.ModelAdmin):
 
 @admin.register(Book)
 class Book(admin.ModelAdmin):
-    list_display = ["id", "name", "status", "category", "image", "last_rating", "created", "modified"]
+    list_display = ["id", "name", "status", "category", "image", "last_rating", "created", "modified", "book_amount"]
     list_filter = ["authors"]
     search_fields = ["name"]
 

@@ -6,22 +6,23 @@
     <div class="row">
         <div class="col ms-auto"><br>
             <h1 style="margin-left: 300px"> Lista Książek</h1>
+            <!--
             <a class="btn btn-primary" href="{% url 'book_create' %}" role="button"><i class="bi bi-plus-square"></i> Dodaj książkę</a><br>
+            -->
             <br/>
         </div>
     </div>
     <div class="row">
         <div class="col ms-auto">
-            <table class="table">
-              <thead>
-                <tr>
+          <table class="table table-striped">
+            <thead class="thead-dark">
+              <tr class="table-secondary">
                   <th scope="col">Okładka</th>
                   <!-- <th scope="col">#</th> -->
                   <th scope="col">Tytuł</th>
                   <th scope="col">Autor</th>
                   <th scope="col">Kategoria</th>
-                  <th scope="col">Status</th>
-                  <th scope="col"></th>
+                  <th scope="col"> </th>
                 </tr>
               </thead>
               <tbody>
@@ -35,18 +36,9 @@
                       {{ author.first_name }} {{ author.last_name }} 
                       {% endfor %}
                   </td>
-                  {% if book.status == "D" %}
-                  <td>Dostępna</td>
-                  {% endif %}
-                  {% if book.status == "N" %}
-                  <td>Niedostępna</td>
-                  {% endif %}
-                  <td> {{ book_list.first.category }} </td>
+                  <td> {{ book.category }} </td>
                   <td>
-                    <!--
-                      <a class="btn btn-primary" href="{% url 'bookDetail' pk=book.pk %}"><i class="bi bi-pencil"></i> Edytuj</a>
-                      <a class="btn btn-danger" href="{% url 'book_delete' pk=book.pk %}"><i class="bi bi-eraser"></i>Usuń</a>
-                      -->
+                      <a class="btn btn-primary" href="{% url 'bookDetail' pk=book.pk %}"><i class="bi bi-pencil"></i> Szczegóły</a>
                   </td>
                 </tr>
                 {% endfor %}

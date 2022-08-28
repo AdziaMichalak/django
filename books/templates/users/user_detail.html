@@ -39,7 +39,7 @@
                 <td>{{ book.rent_date|date:"d-m-Y" }}</td>
                 <td>{{ book.back_date|date:"d-m-Y" }}</td>
                 <td>{{ book.how_many_days }}</td>
-                <td><a href="{% url 'return_book' slug=book.book.slug %}">Return</a>
+                <td><a href="{% url 'return_book' pk=book.book.pk %}">Return</a>
                 </td>
             </tr>
             {% endfor %}
