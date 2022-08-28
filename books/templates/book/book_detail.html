@@ -40,8 +40,7 @@
         <h5><strong>Tytuł:</strong>     {{ book.name }}</h5>
         <h5><strong>Autor:</strong>     {{ book.author_id }}</h5>
         <h5><strong>Kategoria:</strong> {{ book.category }}</h5>
-        <h5><strong>Opis:</strong> </h5>
-        <p> {{ book.description }}</p>
+        <h5><strong>Opis:</strong> </h5> <p> {{ book.description }}</p>
         <hr class="my-4">
         <div id="commentBox">
             {% if user.is_authenticated %}

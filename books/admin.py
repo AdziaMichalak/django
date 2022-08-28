@@ -17,7 +17,7 @@ class Category(admin.ModelAdmin):
 
 @admin.register(Book)
 class Book(admin.ModelAdmin):
-    list_display = ["id", "name", "author_id", "status", "category", "image", "last_rating", "created", "modified", "book_amount"]
+    list_display = ["id", "name", "author_id", "description", "status", "category", "image", "last_rating", "created", "modified", "book_amount"]
     list_filter = ["name"]
     search_fields = ["name"]
 

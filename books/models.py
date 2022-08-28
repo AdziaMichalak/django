@@ -63,6 +63,7 @@ class Book(models.Model):
     name = models.CharField(max_length=100, verbose_name='Tytuł')
     status = models.CharField(max_length=1, choices=STATUS, default='D', verbose_name='Status')
     author_id = models.ForeignKey('books.Author', on_delete=models.CASCADE, null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, blank=True)
     image = models.ImageField(default='default_book.png', upload_to='books_pics')
     last_rating = models.IntegerField(default=0)
