@@ -37,12 +37,10 @@
         {% endif %} <br>
     </div>
     <div class="col-md-8">
-        <h5><strong>{{ book.name }}</strong> </h5>
-        {% for author in book.authors.all %}
-        <h5><strong>Author:</strong> {{ author.first_name }} {{ author.last_name }} 
-        {% endfor %}
-        <h5><strong>Category:</strong> {{ book.category }}</h5>
-        <h5><strong>Desciption:</strong> </h5>
+        <h5><strong>Tytuł:</strong>     {{ book.name }}</h5>
+        <h5><strong>Autor:</strong>     {{ book.author_id }}</h5>
+        <h5><strong>Kategoria:</strong> {{ book.category }}</h5>
+        <h5><strong>Opis:</strong> </h5>
         <p> {{ book.description }}</p>
         <hr class="my-4">
         <div id="commentBox">
