@@ -46,6 +46,7 @@ class Author(models.Model):
     last_name = models.CharField(max_length=100, verbose_name='Nazwisko')
     birth_date = models.DateField(verbose_name='Data urodzenia')
     active = models.BooleanField(default=True)
+    books = models.ManyToManyField('Book', through='Authored')
     
     def __str__(self):
         return "%s %s" % (self.first_name, self.last_name)
@@ -61,7 +62,7 @@ class Book(models.Model):
     )
     name = models.CharField(max_length=100, verbose_name='Tytuł')
     status = models.CharField(max_length=1, choices=STATUS, default='D', verbose_name='Status')
-    authors = models.CharField(max_length=100, null=True, blank=True, verbose_name='Autor')
+    author_id = models.ForeignKey('books.Author', on_delete=models.CASCADE, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, blank=True)
     image = models.ImageField(default='default_book.png', upload_to='books_pics')
     last_rating = models.IntegerField(default=0)

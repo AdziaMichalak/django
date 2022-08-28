@@ -32,9 +32,7 @@
                 <!--  <th scope="row">{{ book.id }}</th> -->
                   <td>{{ book.name }}</td>
                   <td>
-                      {% for author in book.authors.all %}
-                      {{ author.first_name }} {{ author.last_name }} 
-                      {% endfor %}
+                      {{ book.author_id }}  
                   </td>
                   <td> {{ book.category }} </td>
                   <td>

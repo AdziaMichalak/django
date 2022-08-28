@@ -3,10 +3,12 @@ from django.contrib import admin
 from .models import Author, Book, BookRentHistory, Category, InBoxMessages, BorrowBook, Profile
 # Register your models here.
 
+
 @admin.register(Author)
 class Author(admin.ModelAdmin):
     list_display = ["id", "first_name", "last_name"]
     search_fields = ["name"]
+
 
 @admin.register(Category)
 class Category(admin.ModelAdmin):
@@ -15,8 +17,8 @@ class Category(admin.ModelAdmin):
 
 @admin.register(Book)
 class Book(admin.ModelAdmin):
-    list_display = ["id", "name", "authors", "status", "category", "image", "last_rating", "created", "modified", "book_amount"]
-    list_filter = ["authors"]
+    list_display = ["id", "name", "author_id", "status", "category", "image", "last_rating", "created", "modified", "book_amount"]
+    list_filter = ["name"]
     search_fields = ["name"]
 
 

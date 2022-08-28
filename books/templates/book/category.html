@@ -19,9 +19,7 @@
             <img class="book_image" src="{{ book.image.url }}" alt="Book image"><br>
             <br>
             <h6>{{ book.name }}</h6>
-            {% for author in book.authors.all %}
-            <p>{{ author.first_name }} {{ author.last_name }}</p>
-            {% endfor %}
+            <p>{{ book.author_id }}</p>
             {% if book.actual_rating %}
             {% for rate in book.actual_rating %}
             <span class="fa fa-star checked"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
@@ -32,7 +30,7 @@
             
             <h6><b>Nobody rated</b></h6>
             {% endif %}
-            
+            <br>
             <a href="{% url 'bookDetail' pk=book.pk %}"><button class="btn btn-success btn-xs">Book details</button></a>
         </div>
     </div>

@@ -4,9 +4,7 @@
 <h3>Are you sure tha you want to rent this book? </h3>
 <img src="{{ book.image.url }}" class="bookImage" alt="">
 <h5><strong>Title:</strong> {{ book.name }}</h5>
-{% for author in book.authors.all %}
-<h5><strong>Author:</strong> {{ author.first_name }} {{ author.last_name }} </h5>
-{% endfor %}
+<h5><strong>Author:</strong> {{ book.author_id }} </h5>
 <a href="{% url 'rent_book' pk=book.pk %}"><button class="btn btn-success btn-xs">Rent book</button></a>
 <a href="{% url 'bookDetail' pk=book.pk %}"><button class="btn btn-info btn-xs">Return</button></a>
 {% endblock content %}
