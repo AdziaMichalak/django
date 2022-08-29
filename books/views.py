@@ -127,7 +127,7 @@ class BookIndex(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['books'] = models.Book.objects.all()
-        context['active_book'] = 'active'
+        context['book'] = 'active'
         return context
 
 
@@ -187,6 +187,11 @@ class HomeListView(ListView):
     def get_queryset(self):
         queryset = super(HomeListView, self).get_queryset()
         return queryset.all().order_by('-id')[:9]
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_home'] = 'active'
+        return context
 
 
 class BooksListView(ListView):
